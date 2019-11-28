@@ -1,0 +1,33 @@
+==========================================================
+     __   __ _______ _______ _______ _______ __   __ 
+    |  |_|  |   _   |  _    |       |       |  | |  |
+    |       |  |_|  | |_|   |   _   |    ___|  |_|  |
+    |       |       |       |  | |  |   |___|       |
+    |       |       |  _   ||  |_|  |    ___|_     _|
+    | ||_|| |   _   | |_|   |       |   |___  |   |  
+    |_|   |_|__| |__|_______|_______|_______| |___|
+==========================================================
+  un certain nombre de créatures apparraît au 
+lancement du programme ainsi qu'un nombre définit
+de nourriture et boissons
+
+
+  elles vont se balader dans des directions aléatoires
+(tendance à aller en bas à droite de l'écran en moyenne)
+
+
+  si elles voient de la nourriture ou une boisson dans leur 
+rayon de vue elles y foncent et l'assimilent
+
+
+  si un male voit une femelle non enceinte et que les deux 
+ont plus de 50 de libido ils s'accouplent et la femelle 
+devient enceinte (les deux perdent toute libido)
+
+
+  si une créature atteint 100 de soif ou de faim elle va 
+perdre 5 points de vie par minute pour chacune de ces 
+caractéristiques
+
+
+  si une créature n'a plus de points de vie elle disparaît
