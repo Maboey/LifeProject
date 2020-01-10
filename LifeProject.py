@@ -14,6 +14,10 @@ fps = 30
 correctionOffRandomConstant = fps//6
 #endregion
 
+#region import sprites
+backgroundSprite = pygame.image.load('Sprite/background.jpg')
+#endregion
+
 #region counters
 creatureNumber = 0
 numberOfCreaturesThatDied = 0
@@ -32,7 +36,7 @@ infoBarVerticalOffset = 30
 infoBarHorizontalOffset = infoBarWidth//2
 
 offsetInfoTextPosition1 = 20
-infoRectangleWidth = 340
+infoRectangleWidth = 150
 infoRectangleHeight = 220
 infoTextSize = 20
 #endregion
@@ -52,8 +56,8 @@ backgroundColor = water
 #endregion
 
 #region foods and drinks
-foodNames = ["Pain","Pomme de terre","Haricots","Riz","Cassoulet","Nuggets","Pizza","Burgers","Tomate","Epinards"]
-drinkNames = ["Eau","Coca-Cola","Pepsi","Sinalco","Jus d'Orange","Jus de Pomme","Bière","Jus de Tomate"]
+foodNames = ["Pain","Pomme de terre","Haricots","Riz","Cassoulet","Nuggets","Pizza","Hamburger","Tomate","Epinards","Tacos"]
+drinkNames = ["Eau","Coca-Cola","Pepsi","Sinalco","Jus d'Orange","Jus de Pomme","Bière","Jus de Tomate","Rivela","Sirop","Jus de pomme"]
 #endregion
 
 #region object lists
@@ -599,7 +603,7 @@ def yearUpdate():
 #region window drawings
 
 def redrawGameWindow():
-    displaySurface.fill(backgroundColor) #refill the image with desired background color in order to erase everything
+    displaySurface.blit(backgroundSprite, (0,0)) #refill the image with desired background color in order to erase everything
     drawObjects()
     if mouseX < 100 and mouseY < 200:
         drawInfo()

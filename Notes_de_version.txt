@@ -9,22 +9,6 @@
 ==========================================================
 
 
-  correction bugs de déplacement (créatures se  bloquant ou 
-allant beaucoup trop vite) 
+Abandon de l'idée de faire un serveur temporairement au moins
 
-
-  tweak de l'apparation de la nourriture du gain de 
-libido et de faim/soif ainsi que la vie perdue par minute
-pour un meilleur équilibre (le nombre de créature ne croit
-pas expodentiellement et ne par plus non plus sur une 
-extinction)
-
-
-réglage du numéro attribué à chaque créature pour qu'il 
-continue à s'incrémenté même si une créature meurt
-
-
-déplacement des infos des créatures sur la droite au 
-lieu de en dessous
-
-ajout de l'info "vivant depuis x minutes"
+Ajout de sprites
