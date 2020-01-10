@@ -7,27 +7,24 @@
     | ||_|| |   _   | |_|   |       |   |___  |   |  
     |_|   |_|__| |__|_______|_______|_______| |___|
 ==========================================================
-  un certain nombre de créatures apparraît au 
-lancement du programme ainsi qu'un nombre définit
-de nourriture et boissons
 
 
-  elles vont se balader dans des directions aléatoires
-(tendance à aller en bas à droite de l'écran en moyenne)
+  correction bugs de déplacement (créatures se  bloquant ou 
+allant beaucoup trop vite) 
 
 
-  si elles voient de la nourriture ou une boisson dans leur 
-rayon de vue elles y foncent et l'assimilent
+  tweak de l'apparation de la nourriture du gain de 
+libido et de faim/soif ainsi que la vie perdue par minute
+pour un meilleur équilibre (le nombre de créature ne croit
+pas expodentiellement et ne par plus non plus sur une 
+extinction)
 
 
-  si un male voit une femelle non enceinte et que les deux 
-ont plus de 50 de libido ils s'accouplent et la femelle 
-devient enceinte (les deux perdent toute libido)
+réglage du numéro attribué à chaque créature pour qu'il 
+continue à s'incrémenté même si une créature meurt
 
 
-  si une créature atteint 100 de soif ou de faim elle va 
-perdre 5 points de vie par minute pour chacune de ces 
-caractéristiques
+déplacement des infos des créatures sur la droite au 
+lieu de en dessous
 
-
-  si une créature n'a plus de points de vie elle disparaît
+ajout de l'info "vivant depuis x minutes"

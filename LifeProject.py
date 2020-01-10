@@ -3,13 +3,17 @@ from random import SystemRandom
 
 #region Variables and Constants
 screenWidth = 1500
-screenHeight = 900
+screenHeight = 850
 displaySurface = pygame.display.set_mode((screenWidth,screenHeight))
 pygame.display.set_caption("Life Project")
 clock = pygame.time.Clock()
 run = True
 fps = 30
 correctionOffRandomConstant = fps//6
+
+creatureNumber = 0
+creatureInfoXOffset = 20
+creatureInfoYOffset = -30
 
 red = [255,0,0]
 green = [50,255,50]
@@ -34,18 +38,18 @@ creatureList = []
 foodList = []
 drinkList = []
 
-chancesOfMovingMax = 6
-chancesOfMoving = 2
-baseCreatureSpeed = 23
+chancesOfMovingMax = 4
+chancesOfMoving = 1
+baseCreatureSpeed = 20
 
 pregnantMinutesCountDown = 10
 
-StartingNumberOfCreatures = 50
+StartingNumberOfCreatures = 10
 StartingNumberOfFoods = StartingNumberOfCreatures // 2
 StartingNumberOfDrinks = StartingNumberOfCreatures // 2
 
-foodGivenPerMinute = 3
-drinkGivenPerMinute = 3
+foodGivenPerMinute = 4
+drinkGivenPerMinute = 4
 
 offsetInfoTextPosition1 = 20
 infoRectangleWidth = 340
@@ -74,6 +78,12 @@ firstTimeInWhileLoop = True
 animationCreature = [0,1,2,1]
 animationCreatureCount = 0
 
+creatureLifepointsPerMinuteWithHunger = 10
+creatureLifepointsPerMinuteWithThirst = 10
+creatureHungerPerMinute = 10
+creatureThirstPerMinute = 10
+creatureLibidoPerMinute = 2
+
 #endregion
 
 #region Classes
@@ -84,7 +94,8 @@ class stuff(object):
         self.y = screenHeight//2
 
 class creature (stuff):
-    def __init__(self,name):
+    def __init__(self, number):
+        self.number = number
         self.lifePoints = 100
         self.gender = SystemRandom().choice(genders)
         self.color = [SystemRandom().randrange(0,255),SystemRandom().randrange(0,255),SystemRandom().randrange(0,255)]
@@ -97,10 +108,11 @@ class creature (stuff):
         self.foundfood = False
         self.founddrink = False
         self.foundpartner = False
-        self.name = name
+        self.name = "creature " + str(self.number)
         self.birthDate = [day,month,year]
+        self.counterMinutesAlive = 0
 
-        self.height = SystemRandom().randrange(15,25)
+        self.height = SystemRandom().randrange(10,20)
         self.muscularMass = SystemRandom().randrange(0,100)
         self.bodyFat = SystemRandom().randrange(0,100)
         self.weight = ((self.height * self.muscularMass)/100) + self.bodyFat
@@ -110,7 +122,7 @@ class creature (stuff):
         self.moveX = 0
         self.moveY = 0
         self.sightRadius = SystemRandom().randrange(self.height*2,self.height*4)
-        self.speed = baseCreatureSpeed//self.height
+        self.speed = baseCreatureSpeed // self.height
 
         self.GeneTransmissionHeight = 0
         self.GeneTransmissionSightRadius = 0
@@ -195,10 +207,16 @@ class creature (stuff):
         myfont = pygame.font.SysFont('Comic Sans MS', 10)
         
         textsurface = myfont.render(self.gender, False, (0, 0, 0))
-        displaySurface.blit(textsurface,(self.x-(self.height//2),self.y+self.height))
+        displaySurface.blit(textsurface,(creatureInfoXOffset + self.x + self.height, creatureInfoYOffset + self.y + (self.height//2)))
 
         textsurface = myfont.render(str(self.birthDate[0]) + "/" + str(self.birthDate[1]) + "/" + str(self.birthDate[2]), False, (0, 0, 0))
-        displaySurface.blit(textsurface,(self.x - (self.height//2),self.y + self.height+10))
+        displaySurface.blit(textsurface,(creatureInfoXOffset + self.x + self.height, creatureInfoYOffset + self.y + (self.height//2)+10))
+
+        textsurface = myfont.render(str(self.name), False, (0, 0, 0))
+        displaySurface.blit(textsurface,(creatureInfoXOffset + self.x + self.height, creatureInfoYOffset + self.y + (self.height//2)+20))
+
+        textsurface = myfont.render("Since " + str(self.counterMinutesAlive) + " minutes", False, (0, 0, 0))
+        displaySurface.blit(textsurface,(creatureInfoXOffset + self.x + self.height, creatureInfoYOffset + self.y + (self.height//2)+30))
     
     def move(self):
         if not ((self.x + (4*self.moveX)) > screenWidth or (self.x + (4*self.moveX)) < 0):
@@ -224,7 +242,7 @@ class creature (stuff):
                 elif self.moveX < -1:
                     self.moveX = SystemRandom().randrange(0,self.sightRadius)//fps
                 else :
-                    self.moveX += SystemRandom().randrange(-self.sightRadius,self.sightRadius + correctionOffRandomConstant)//fps 
+                    self.moveX = SystemRandom().randrange(-self.sightRadius,self.sightRadius + correctionOffRandomConstant)//fps 
 
             if SystemRandom().randrange(0,chancesOfMovingMax) > chancesOfMoving:      
                 if (self.y + (2*self.sightRadius)) > screenHeight :
@@ -238,7 +256,7 @@ class creature (stuff):
                 elif self.moveY < -1:
                     self.moveY = SystemRandom().randrange(0,self.sightRadius)//fps
                 else:
-                    self.moveY += SystemRandom().randrange(-self.sightRadius,self.sightRadius + correctionOffRandomConstant)//fps 
+                    self.moveY = SystemRandom().randrange(-self.sightRadius,self.sightRadius + correctionOffRandomConstant)//fps 
         else:
             self.moveX -= self.moveX//fps
             self.moveY -= self.moveY//fps   
@@ -275,10 +293,12 @@ class drink (stuff):
 #region definitions
 def LifeProjectInitialisation():
     #region creatures creation
+    global creatureNumber
     i = 0
     while i < StartingNumberOfCreatures:
         i += 1
-        creatureList.append(creature("creature"+str(i)))
+        creatureList.append(creature(creatureNumber))
+        creatureNumber +=1
     #endregion
     #region food creation
     i = 0
@@ -309,14 +329,14 @@ def fpsUpdate():
         obj.move()
         pass
     #endregion
-    #region makes creature go towards foods, drinks or partners and eat, drink, or make a baby
+    #region makes creature go towards foods, drinks or partners and eat, drink, or make a babies
     for creatures in creatureList:
         for creaturesB in creatureList: # make baby
-            if ((((creaturesB.x - creatures.x) > -creatures.sightRadius) and ((creaturesB.x - creatures.x) < creatures.sightRadius)) and (((creaturesB.y - creatures.y) > -creatures.sightRadius) and ((creaturesB.y - creatures.y) < creatures.sightRadius))) and (creatures.gender == "male" and creaturesB.gender == "female") and (creatures.libido>50 and creaturesB.libido>50) and not(creaturesB.pregnant):
+            if ((((creaturesB.x - creatures.x) > -creatures.sightRadius) and ((creaturesB.x - creatures.x) < creatures.sightRadius)) and (((creaturesB.y - creatures.y) > -creatures.sightRadius) and ((creaturesB.y - creatures.y) < creatures.sightRadius))) and ((creatures.gender == "male" and creaturesB.gender == "female") or (creatures.gender == "female" and creaturesB.gender == "male")) and (creatures.libido>50 and creaturesB.libido>50) and not(creaturesB.pregnant):
                 creatures.moveX = (creaturesB.x - creatures.x)//(fps//3)
                 creatures.moveY = (creaturesB.y - creatures.y)//(fps//3)
                 creatures.foundpartner = True
-                if ((creaturesB.x - creatures.x) == 0) and ((creaturesB.y - creatures.y) == 0):
+                if ((creaturesB.x - creatures.x) == 0) and ((creaturesB.y - creatures.y) == 0) and (creatures.gender == "male" and creaturesB.gender == "female"):
                     creaturesB.pregnant = True
                     creaturesB.pregnantCounter = pregnantMinutesCountDown
                     creaturesB.libido = 0
@@ -328,6 +348,8 @@ def fpsUpdate():
                     creaturesB.GeneTransmissionBodyFat = (creaturesB.bodyFat + creatures.bodyFat)//2
                     creaturesB.GeneTransmissionWeight = (creaturesB.weight + creatures.weight)//2
                     creaturesB.GeneTransmissionSpeed = (creaturesB.speed + creatures.speed)//2
+                    creatures.moveX = 0
+                    creatures.moveY = 0
                 elif (creatures.moveX < 1 and creatures.moveX > -1) and (creatures.moveY < 1 and creatures.moveY > -1):
                     creatures.x += (creaturesB.x-creatures.x)
                     creatures.y += (creaturesB.y-creatures.y)      
@@ -338,9 +360,11 @@ def fpsUpdate():
                 creatures.moveX = (foods.x - creatures.x)//(fps//3)
                 creatures.moveY = (foods.y - creatures.y)//(fps//3)
                 creatures.foundfood = True
-                if ((foods.x - creatures.x) == 0) and ((foods.y - creatures.y) == 0):
+                if ((foods.x - creatures.x) < creatures.height) and ((foods.y - creatures.y) < creatures.height):
                     creatures.eat(foods.weight, foods.nutrition)
                     foodList.remove(foods)
+                    creatures.moveX = 0
+                    creatures.moveY = 0
                 elif (creatures.moveX < 1 and creatures.moveX > -1) and (creatures.moveY < 1 and creatures.moveY > -1):
                     creatures.x += (foods.x-creatures.x)
                     creatures.y += (foods.y-creatures.y)
@@ -351,9 +375,11 @@ def fpsUpdate():
                 creatures.moveX = (drinks.x - creatures.x)//(fps//3)
                 creatures.moveY = (drinks.y - creatures.y)//(fps//3)
                 creatures.founddrink = True
-                if ((drinks.x - creatures.x) == 0) and ((drinks.y - creatures.y) == 0):
+                if ((drinks.x - creatures.x) < creatures.height) and ((drinks.y - creatures.y) < creatures.height):
                     creatures.drink(drinks.weight, drinks.hydratation)
                     drinkList.remove(drinks)
+                    creatures.moveX = 0
+                    creatures.moveY = 0
                 elif (creatures.moveX < 1 and creatures.moveX > -1) and (creatures.moveY < 1 and creatures.moveY > -1):
                     creatures.x += (drinks.x-creatures.x)
                     creatures.y += (drinks.y-creatures.y)      
@@ -413,6 +439,7 @@ def secondUpdate():
     #endregion
 
 def minuteUpdate():
+    global creatureNumber
     i = 0
     while i < foodGivenPerMinute:
         foodList.append(food()) # creates a food item
@@ -422,20 +449,25 @@ def minuteUpdate():
         drinkList.append(drink()) # creates a drink item
         i += 1
     for creatures in creatureList: # evolve creature stats
+        creatures.counterMinutesAlive += 1
         if creatures.hunger < 100 :
-            creatures.hunger += 5
+            creatures.hunger += creatureHungerPerMinute
         else:
-            creatures.lifePoints -= 5
+            creatures.hunger = 100
+            creatures.lifePoints -= creatureLifepointsPerMinuteWithHunger
         if creatures.thirst < 100 :
-            creatures.thirst += 5
+            creatures.thirst += creatureThirstPerMinute
         else:
-            creatures.lifePoints -= 5
+            creatures.lifePoints -= creatureLifepointsPerMinuteWithThirst
         if creatures.libido < 100 :
-            creatures.libido += 5
+            creatures.libido += creatureLibidoPerMinute
         if creatures.pregnant:
             creatures.pregnantCounter -= 1
             if creatures.pregnantCounter <= 0:
-                creatureList.append(creature("creature"+str(len(creatureList))))
+                creatures.pregnantCounter = 0
+                creatureList.append(creature(creatureNumber))
+                creatureNumber += 1
+                creatureList[-1].number = creatureNumber
                 creatureList[-1].x = creatures.x
                 creatureList[-1].y = creatures.y
                 creatureList[-1].libido = 0
@@ -497,16 +529,16 @@ def drawInfo():
 
     myfont = pygame.font.SysFont('Comic Sans MS', infoTextSize)
 
-    textsurface = myfont.render("number of males = " + str(numberOfMale), False, black)
+    textsurface = myfont.render("males = " + str(numberOfMale), False, black)
     displaySurface.blit(textsurface,(10,0))
 
-    textsurface = myfont.render("number of females = " + str(numberOfFemale), False, black)
+    textsurface = myfont.render("females = " + str(numberOfFemale), False, black)
     displaySurface.blit(textsurface,(10,offsetInfoTextPosition1))
 
-    textsurface = myfont.render("number of pregnant creatures = " + str(numberOfPregnantCreatures), False, black)
+    textsurface = myfont.render("pregnant = " + str(numberOfPregnantCreatures), False, black)
     displaySurface.blit(textsurface,(10,offsetInfoTextPosition1*2))
 
-    textsurface = myfont.render("number of creatures that died = " + str(numberOfCreaturesThatDied), False, black)
+    textsurface = myfont.render("deaths = " + str(numberOfCreaturesThatDied), False, black)
     displaySurface.blit(textsurface,(10,offsetInfoTextPosition1*3))
 
     textsurface = myfont.render("year = " + str(year), False, black)
